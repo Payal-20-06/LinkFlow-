@@ -1,0 +1,158 @@
+/* ============================================
+   PRECISION FLOW — DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* ── Surfaces ── */
+  --color-surface:                  #0f0d11;
+  --color-surface-dim:              #0f0d11;
+  --color-surface-bright:           #2e2b32;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low:    #151217;
+  --color-surface-container:        #1b181e;
+  --color-surface-container-high:   #211e25;
+  --color-surface-container-highest:#28242c;
+  --color-surface-variant:          #28242c;
+  --color-surface-tint:             #d0bfec;
+
+  /* ── On-Surface ── */
+  --color-on-surface:               #ebe3ee;
+  --color-on-surface-variant:       #afa9b3;
+  --color-inverse-surface:          #fef7fd;
+  --color-inverse-on-surface:       #575459;
+
+  /* ── Outline ── */
+  --color-outline:                  #79737d;
+  --color-outline-variant:          #4b464f;
+
+  /* ── Primary ── */
+  --color-primary:                  #d0bfec;
+  --color-primary-dim:              #c2b1dd;
+  --color-on-primary:               #463a5e;
+  --color-primary-container:        #594c72;
+  --color-on-primary-container:     #ebddff;
+  --color-inverse-primary:          #66597f;
+  --color-primary-fixed:            #dbcaf7;
+  --color-primary-fixed-dim:        #cdbce9;
+  --color-on-primary-fixed:         #3a2e52;
+  --color-on-primary-fixed-variant: #574a70;
+
+  /* ── Secondary ── */
+  --color-secondary:                #cdc2dc;
+  --color-secondary-dim:            #bfb4ce;
+  --color-on-secondary:             #443d51;
+  --color-secondary-container:      #3f384c;
+  --color-on-secondary-container:   #c6bbd4;
+  --color-secondary-fixed:          #eadef8;
+  --color-secondary-fixed-dim:      #dbd0ea;
+  --color-on-secondary-fixed:       #433c50;
+  --color-on-secondary-fixed-variant:#60586e;
+
+  /* ── Tertiary ── */
+  --color-tertiary:                 #ffd8ee;
+  --color-tertiary-dim:             #edb7d8;
+  --color-on-tertiary:              #6e4461;
+  --color-tertiary-container:       #fbc4e6;
+  --color-on-tertiary-container:    #643c58;
+  --color-tertiary-fixed:           #fbc4e6;
+  --color-tertiary-fixed-dim:       #edb7d8;
+  --color-on-tertiary-fixed:        #4f2944;
+  --color-on-tertiary-fixed-variant:#6f4561;
+
+  /* ── Error ── */
+  --color-error:                    #f97386;
+  --color-error-dim:                #c44b5f;
+  --color-on-error:                 #490013;
+  --color-error-container:          #871c34;
+  --color-on-error-container:       #ff97a3;
+
+  /* ── Background ── */
+  --color-background:               #0f0d11;
+  --color-on-background:            #ebe3ee;
+
+  /* ── Typography ── */
+  --font-display:   'Inter', system-ui, sans-serif;
+  --font-body:      'Inter', system-ui, sans-serif;
+  --font-mono:      'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ── Font Sizes ── */
+  --text-display-lg:      48px;
+  --text-display-lg-lh:   56px;
+  --text-display-lg-ls:   -0.04em;
+
+  --text-display-lg-mob:  36px;
+  --text-display-lg-mob-lh: 42px;
+  --text-display-lg-mob-ls: -0.02em;
+
+  --text-headline-md:     24px;
+  --text-headline-md-lh:  32px;
+  --text-headline-md-ls:  -0.02em;
+
+  --text-body-base:       16px;
+  --text-body-base-lh:    24px;
+
+  --text-body-sm:         14px;
+  --text-body-sm-lh:      20px;
+
+  --text-label-caps:      12px;
+  --text-label-caps-lh:   16px;
+  --text-label-caps-ls:   0.05em;
+
+  --text-mono:            13px;
+  --text-mono-lh:         20px;
+
+  /* ── Border Radius ── */
+  --radius-sm:     0.25rem;   /* 4px */
+  --radius:        0.5rem;    /* 8px */
+  --radius-md:     0.75rem;   /* 12px */
+  --radius-lg:     1rem;      /* 16px */
+  --radius-xl:     1.5rem;    /* 24px */
+  --radius-full:   9999px;
+
+  /* ── Spacing ── */
+  --space-unit:    4px;
+  --space-1:       4px;
+  --space-2:       8px;
+  --space-3:       12px;
+  --space-4:       16px;
+  --space-5:       20px;
+  --space-6:       24px;
+  --space-7:       28px;
+  --space-8:       32px;
+  --space-10:      40px;
+  --space-12:      48px;
+  --space-16:      64px;
+  --space-20:      80px;
+
+  --container-max: 1280px;
+  --gutter:        24px;
+
+  /* ── Transitions ── */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:   250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Elevation (via tonal layers) ── */
+  --elevation-0: var(--color-surface);
+  --elevation-1: var(--color-surface-container-low);
+  --elevation-2: var(--color-surface-container);
+  --elevation-3: var(--color-surface-container-high);
+  --elevation-4: var(--color-surface-container-highest);
+
+  /* ── Glassmorphism ── */
+  --glass-bg:     rgba(27, 24, 30, 0.75);
+  --glass-border: rgba(75, 70, 79, 0.5);
+  --glass-blur:   12px;
+
+  /* ── Sidebar ── */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 64px;
+  --navbar-height: 60px;
+
+  /* ── Chart Colors ── */
+  --chart-primary:   #d0bfec;
+  --chart-secondary: #cdc2dc;
+  --chart-tertiary:  #ffd8ee;
+  --chart-4:         #c2b1dd;
+  --chart-5:         #edb7d8;
+}

@@ -1,0 +1,52 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Environments ──────────────────────────────────────────────────────────────
+.env
+*.env
+.venv/
+venv/
+env/
+ENV/
+
+# ── Database ──────────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── IDEs ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Node / React ──────────────────────────────────────────────────────────────
+node_modules/
+precision-flow/build/
+precision-flow/.env.local
+precision-flow/.env.development.local
+precision-flow/.env.test.local
+precision-flow/.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+.dockerignore
+
+# ── Alembic ───────────────────────────────────────────────────────────────────
+# Keep alembic/versions tracked — they are migrations

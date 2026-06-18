@@ -1,0 +1,65 @@
+.pf-skeleton {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-container) 25%,
+    var(--color-surface-container-high) 50%,
+    var(--color-surface-container) 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ── Card skeleton ── */
+.pf-skeleton-card {
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pf-skeleton-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+/* ── Table skeleton ── */
+.pf-skeleton-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-skeleton-table__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-4);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.pf-skeleton-table__row--header {
+  padding: var(--space-3) var(--space-4);
+  opacity: 0.6;
+}
+
+/* ── KPI skeleton ── */
+.pf-skeleton-kpi {
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pf-skeleton-kpi__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

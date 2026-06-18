@@ -1,0 +1,128 @@
+/* Shared auth page styles */
+.pf-auth-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.pf-auth-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.pf-auth-page__title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+
+.pf-auth-page__subtitle {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.pf-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pf-auth-form__forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.pf-auth-link {
+  font-size: var(--text-body-sm);
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+.pf-auth-link:hover {
+  color: var(--color-primary-dim);
+  text-decoration: underline;
+}
+
+/* ── Divider ── */
+.pf-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--color-on-surface-variant);
+  font-size: 13px;
+}
+.pf-auth-divider::before,
+.pf-auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-outline-variant);
+}
+
+/* ── Footer text ── */
+.pf-auth-footer-text {
+  text-align: center;
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  margin: 0;
+}
+
+/* ── Back link ── */
+.pf-auth-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-on-surface-variant);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+.pf-auth-back:hover { color: var(--color-on-surface); }
+
+/* ── Success state ── */
+.pf-auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
+}
+
+.pf-auth-success__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(208, 191, 236, 0.1);
+  border: 1px solid rgba(208, 191, 236, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.pf-auth-success__title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.pf-auth-success__text {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0;
+}

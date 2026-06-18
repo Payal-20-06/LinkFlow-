@@ -1,0 +1,46 @@
+.pf-dash-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-background);
+}
+
+.pf-dash-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 99;
+  display: none;
+}
+
+.pf-dash-main {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-dash-content {
+  flex: 1;
+  padding: var(--space-8) var(--space-8);
+  max-width: var(--container-max);
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .pf-dash-content {
+    padding: var(--space-6) var(--space-6);
+  }
+}
+
+@media (max-width: 768px) {
+  .pf-dash-main {
+    margin-left: 0;
+  }
+  .pf-dash-overlay {
+    display: block;
+  }
+  .pf-dash-content {
+    padding: var(--space-5) var(--space-4);
+  }
+}

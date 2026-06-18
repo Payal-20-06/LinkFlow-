@@ -1,0 +1,196 @@
+/* ============================================
+   PRECISION FLOW — GLOBAL STYLES
+   ============================================ */
+/* Fonts loaded in public/index.html */
+@import './variables.css';
+@import './animations.css';
+
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body-base);
+  line-height: var(--text-body-base-lh);
+  color: var(--color-on-surface);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-container-low);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-on-surface-variant);
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+/* ── Links ── */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+/* ── Images ── */
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ── Lists ── */
+ul, ol { list-style: none; }
+
+/* ── Typography Utilities ── */
+.display-lg {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  font-weight: 700;
+  line-height: var(--text-display-lg-lh);
+  letter-spacing: var(--text-display-lg-ls);
+}
+
+.headline-md {
+  font-family: var(--font-display);
+  font-size: var(--text-headline-md);
+  font-weight: 600;
+  line-height: var(--text-headline-md-lh);
+  letter-spacing: var(--text-headline-md-ls);
+}
+
+.body-base  { font-family: var(--font-body); font-size: var(--text-body-base); line-height: var(--text-body-base-lh); }
+.body-sm    { font-family: var(--font-body); font-size: var(--text-body-sm);   line-height: var(--text-body-sm-lh); }
+
+.label-caps {
+  font-family: var(--font-display);
+  font-size: var(--text-label-caps);
+  font-weight: 600;
+  line-height: var(--text-label-caps-lh);
+  letter-spacing: var(--text-label-caps-ls);
+  text-transform: uppercase;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: var(--text-mono-lh);
+}
+
+/* ── Color Utilities ── */
+.text-primary         { color: var(--color-primary); }
+.text-secondary       { color: var(--color-secondary); }
+.text-tertiary        { color: var(--color-tertiary); }
+.text-muted           { color: var(--color-on-surface-variant); }
+.text-error           { color: var(--color-error); }
+.text-on-surface      { color: var(--color-on-surface); }
+
+/* ── Layout Utilities ── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.flex        { display: flex; }
+.flex-col    { flex-direction: column; }
+.items-center{ align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center  { justify-content: center; }
+.gap-1  { gap: var(--space-1); }
+.gap-2  { gap: var(--space-2); }
+.gap-3  { gap: var(--space-3); }
+.gap-4  { gap: var(--space-4); }
+.gap-6  { gap: var(--space-6); }
+.gap-8  { gap: var(--space-8); }
+
+.w-full   { width: 100%; }
+.h-full   { height: 100%; }
+
+/* ── Divider ── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-outline-variant);
+  border: none;
+}
+
+/* ── Glass Morphism ── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-tertiary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Focus ring ── */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Visually hidden ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Page transition wrapper ── */
+.page-enter {
+  animation: fadeInUp var(--transition-base) both;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .display-lg {
+    font-size: var(--text-display-lg-mob);
+    line-height: var(--text-display-lg-mob-lh);
+    letter-spacing: var(--text-display-lg-mob-ls);
+  }
+  .container {
+    padding-inline: var(--space-4);
+  }
+}

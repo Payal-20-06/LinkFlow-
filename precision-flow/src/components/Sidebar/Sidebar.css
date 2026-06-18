@@ -1,0 +1,221 @@
+.pf-sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  height: 100%;
+  background: var(--color-surface-container-low);
+  border-right: 1px solid var(--color-outline-variant);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  padding: var(--space-5) 0;
+  transition: width var(--transition-base);
+}
+
+/* ── Logo ── */
+.pf-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-5) var(--space-5);
+  border-bottom: 1px solid var(--color-outline-variant);
+  margin-bottom: var(--space-4);
+}
+
+.pf-sidebar__logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-secondary-container) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pf-sidebar__logo-text {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.pf-sidebar__logo-text span {
+  color: var(--color-primary);
+}
+
+/* ── Nav ── */
+.pf-sidebar__nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--space-3);
+}
+
+.pf-sidebar__nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pf-sidebar__nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-display);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.pf-sidebar__nav-item:hover {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface);
+}
+
+.pf-sidebar__nav-item--active {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.pf-sidebar__nav-item--active:hover {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.pf-sidebar__nav-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pf-sidebar__nav-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Bottom ── */
+.pf-sidebar__bottom {
+  padding: 0 var(--space-3);
+  flex-shrink: 0;
+}
+
+.pf-sidebar__divider {
+  height: 1px;
+  background: var(--color-outline-variant);
+  margin-bottom: var(--space-3);
+}
+
+.pf-sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background var(--transition-fast);
+  cursor: pointer;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.pf-sidebar__user:hover {
+  background: var(--color-surface-container);
+}
+
+.pf-sidebar__user--active {
+  background: var(--color-surface-container);
+}
+
+.pf-sidebar__user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pf-sidebar__user-name {
+  font-family: var(--font-display);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--color-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pf-sidebar__user-email {
+  font-size: 11px;
+  color: var(--color-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pf-sidebar__bottom > .pf-sidebar__divider + * {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pf-sidebar__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pf-sidebar__bottom > :last-child {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.pf-sidebar__logout {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  background: transparent;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius);
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.pf-sidebar__logout:hover {
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+  border-color: var(--color-error-container);
+}
+
+@media (max-width: 768px) {
+  .pf-sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--transition-base);
+  }
+  .pf-sidebar--open {
+    transform: translateX(0);
+  }
+}

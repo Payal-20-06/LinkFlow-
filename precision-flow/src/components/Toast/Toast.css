@@ -1,0 +1,119 @@
+.pf-toast-container {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  z-index: 9999;
+  max-width: 380px;
+  width: calc(100% - var(--space-8));
+}
+
+.pf-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid;
+  animation: toastIn var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  position: relative;
+  overflow: hidden;
+}
+
+.pf-toast::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.pf-toast--success {
+  background: rgba(208, 191, 236, 0.08);
+  border-color: rgba(208, 191, 236, 0.2);
+  color: var(--color-on-surface);
+}
+.pf-toast--success::before  { background: var(--color-primary); }
+.pf-toast--success .pf-toast__icon { color: var(--color-primary); }
+
+.pf-toast--error {
+  background: rgba(249, 115, 134, 0.08);
+  border-color: rgba(249, 115, 134, 0.25);
+  color: var(--color-on-surface);
+}
+.pf-toast--error::before { background: var(--color-error); }
+.pf-toast--error .pf-toast__icon { color: var(--color-error); }
+
+.pf-toast--warning {
+  background: rgba(255, 216, 238, 0.08);
+  border-color: rgba(255, 216, 238, 0.2);
+  color: var(--color-on-surface);
+}
+.pf-toast--warning::before { background: var(--color-tertiary); }
+.pf-toast--warning .pf-toast__icon { color: var(--color-tertiary); }
+
+.pf-toast--info {
+  background: rgba(205, 194, 220, 0.08);
+  border-color: rgba(205, 194, 220, 0.2);
+  color: var(--color-on-surface);
+}
+.pf-toast--info::before { background: var(--color-secondary); }
+.pf-toast--info .pf-toast__icon { color: var(--color-secondary); }
+
+.pf-toast__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  margin-top: 1px;
+}
+
+.pf-toast__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pf-toast__title {
+  font-family: var(--font-display);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--color-on-surface);
+  margin: 0 0 2px;
+}
+
+.pf-toast__message {
+  font-size: var(--text-body-sm);
+  color: var(--color-on-surface-variant);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.pf-toast__close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  transition: color var(--transition-fast), background var(--transition-fast);
+  margin-top: 1px;
+}
+.pf-toast__close:hover {
+  color: var(--color-on-surface);
+  background: var(--color-surface-container);
+}
+
+@media (max-width: 480px) {
+  .pf-toast-container {
+    bottom: var(--space-4);
+    right: var(--space-4);
+    left: var(--space-4);
+    max-width: 100%;
+    width: auto;
+  }
+}

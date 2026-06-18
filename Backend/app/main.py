@@ -1,0 +1,181 @@
+"""
+app/main.py
+───────────
+FastAPI application entry point.
+
+Fixes vs original main.py:
+  ✅ No wildcard imports (was: from app.models import *)
+  ✅ No duplicate imports
+  ✅ CORS middleware configured (was missing — all browser requests blocked)
+  ✅ All routes under /api/v1 prefix (was missing — all calls 404'd)
+  ✅ Redirect handler uses Depends(get_db) — no session leak
+  ✅ Redirect returns 302 Found (correct HTTP semantics)
+  ✅ 404 for unknown short codes (was returning 200 + JSON error)
+  ✅ /health endpoint added
+  ✅ Structured logging
+  ✅ Global exception handler
+  ✅ Lifespan for startup/shutdown events
+  ✅ Docs only served in DEBUG mode
+"""
+from __future__ import annotations
+
+import logging
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from fastapi import Depends, FastAPI, Request, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, RedirectResponse
+from sqlalchemy.orm import Session
+
+from app.config import settings
+from app.database import Base, engine, get_db
+
+# Import models so their tables are registered with Base before create_all()
+import app.models  # noqa: F401 — side-effect import
+
+from app.routes import auth as auth_routes
+from app.routes import urls as url_routes
+from app.routes import analytics as analytics_routes
+from app.routes import users as user_routes
+from app.services.url_service import get_redirect_url, track_click
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.DEBUG if settings.DEBUG else logging.INFO,
+    format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
+
+
+# ── Lifespan ──────────────────────────────────────────────────────────────────
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """Run startup and shutdown logic."""
+    # Startup
+    logger.info("Starting %s …", settings.APP_NAME)
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables verified.")
+    yield
+    # Shutdown
+    logger.info("%s shutting down.", settings.APP_NAME)
+
+
+# ── Application ───────────────────────────────────────────────────────────────
+app = FastAPI(
+    title=settings.APP_NAME,
+    description=(
+        "Production-ready URL Shortener SaaS API. "
+        "Provides authentication, URL management, and analytics."
+    ),
+    version="1.0.0",
+    lifespan=lifespan,
+    # Only expose interactive docs in debug mode
+    docs_url="/docs" if settings.DEBUG else None,
+    redoc_url="/redoc" if settings.DEBUG else None,
+    openapi_url="/openapi.json" if settings.DEBUG else None,
+)
+
+
+# ── Middleware ────────────────────────────────────────────────────────────────
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# ── Request logging ───────────────────────────────────────────────────────────
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info("→ %s %s", request.method, request.url.path)
+    response = await call_next(request)
+    logger.info("← %s %s %s", request.method, request.url.path, response.status_code)
+    return response
+
+
+# ── Routers ───────────────────────────────────────────────────────────────────
+_API = "/api/v1"
+
+app.include_router(
+    auth_routes.router,
+    prefix=f"{_API}/auth",
+    tags=["Authentication"],
+)
+app.include_router(
+    url_routes.router,
+    prefix=f"{_API}/urls",
+    tags=["URLs"],
+)
+app.include_router(
+    analytics_routes.router,
+    prefix=f"{_API}/analytics",
+    tags=["Analytics"],
+)
+app.include_router(
+    user_routes.router,
+    prefix=f"{_API}/user",
+    tags=["User"],
+)
+
+
+# ── Health check ──────────────────────────────────────────────────────────────
+@app.get("/health", tags=["Health"], include_in_schema=True)
+def health_check() -> dict:
+    """
+    Simple liveness probe. Returns 200 when the service is running.
+    Used by Docker health checks, load balancers, and monitoring.
+    """
+    return {
+        "status": "ok",
+        "service": settings.APP_NAME,
+        "version": "1.0.0",
+    }
+
+
+# ── Redirect ──────────────────────────────────────────────────────────────────
+@app.get(
+    "/{short_code}",
+    tags=["Redirect"],
+    response_class=RedirectResponse,
+    status_code=status.HTTP_302_FOUND,
+    summary="Redirect short URL to original destination",
+    include_in_schema=False,
+)
+def redirect_short_url(
+    short_code: str,
+    db: Session = Depends(get_db),
+) -> RedirectResponse:
+    """
+    Look up short_code and redirect to the original URL.
+
+    FIXED multiple issues from original main.py:
+      - Session was opened manually (SessionLocal()) and never closed
+        on the exception path → connection leak
+      - Returned {"error": "URL not found"} with HTTP 200 — now raises 404
+      - Now uses Depends(get_db) — session is always properly closed
+      - Returns HTTP 302 (temporary redirect, correct for URL shorteners)
+    """
+    url = get_redirect_url(short_code, db)  # raises 404 if not found
+    track_click(url, db)
+    return RedirectResponse(url=url.original_url, status_code=status.HTTP_302_FOUND)
+
+
+# ── Global exception handler ──────────────────────────────────────────────────
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Catch-all handler — prevents internal details leaking to clients."""
+    logger.error(
+        "Unhandled exception on %s %s: %s",
+        request.method,
+        request.url.path,
+        exc,
+        exc_info=True,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "An internal server error occurred. Please try again later."},
+    )

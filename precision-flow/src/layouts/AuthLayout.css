@@ -1,0 +1,140 @@
+.pf-auth-layout {
+  min-height: 100vh;
+  display: flex;
+  background: var(--color-background);
+}
+
+/* ── Panels ── */
+.pf-auth-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pf-auth-panel--brand {
+  background: var(--color-surface-container-low);
+  border-right: 1px solid var(--color-outline-variant);
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-12) var(--space-12);
+}
+
+.pf-auth-panel--form {
+  background: var(--color-background);
+  padding: var(--space-8) var(--space-6);
+  overflow-y: auto;
+}
+
+/* ── Brand content ── */
+.pf-auth-brand {
+  position: relative;
+  z-index: 2;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.pf-auth-brand__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+.pf-auth-brand__logo span span {
+  color: var(--color-primary);
+}
+
+.pf-auth-brand__headline {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.pf-auth-brand__sub {
+  font-size: var(--text-body-base);
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 380px;
+}
+
+/* ── Stats ── */
+.pf-auth-stats {
+  display: flex;
+  gap: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-outline-variant);
+}
+
+.pf-auth-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pf-auth-stat__value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.pf-auth-stat__label {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Decorative orbs ── */
+.pf-auth-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pf-auth-orb--1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(208, 191, 236, 0.12) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+  animation: float 7s ease-in-out infinite;
+}
+
+.pf-auth-orb--2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 216, 238, 0.08) 0%, transparent 70%);
+  bottom: -80px;
+  left: -80px;
+  animation: float 9s ease-in-out infinite reverse;
+}
+
+/* ── Form container ── */
+.pf-auth-form-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .pf-auth-panel--brand { display: none; }
+  .pf-auth-panel--form { min-height: 100vh; }
+  .pf-auth-form-container { max-width: 100%; }
+}
