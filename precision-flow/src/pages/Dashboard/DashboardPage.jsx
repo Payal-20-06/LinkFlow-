@@ -291,7 +291,7 @@ const DashboardPage = () => {
             ) : (
               recentUrls.map((url) => (
                 <div key={url.id} className="pf-url-row">
-                  <span className="pf-url-row__short mono">{url.short}</span>
+                  <a href={url.short} target="_blank" rel="noopener noreferrer" className="pf-url-row__short mono" style={{ textDecoration: 'none', color: 'var(--color-primary)' }}>{url.short}</a>
                   <span className="pf-url-row__dest">{url.destination?.replace('https://', '')}</span>
                   <span className="pf-url-row__clicks">{formatNumber(url.clicks)}</span>
                   <Badge variant={url.status === 'active' ? 'success' : 'default'} dot>

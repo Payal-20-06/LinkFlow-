@@ -5,13 +5,18 @@ import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
 import Badge from '../../components/Badge/Badge';
 import Avatar from '../../components/Avatar/Avatar';
+import Modal from '../../components/Modal/Modal';
 import useAuth from '../../hooks/useAuth';
 import useToast from '../../hooks/useToast';
+import { authService } from '../../services/authService';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../utils/constants';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name:    user?.name || '',
@@ -20,7 +25,13 @@ const ProfilePage = () => {
     website: user?.website || '',
     bio:     user?.bio || '',
   });
+
   const [saving, setSaving] = useState(false);
+
+  // Delete account state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deletingUser, setDeletingUser] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +45,24 @@ const ProfilePage = () => {
     updateUser(form);
     setSaving(false);
     toast.success('Profile updated successfully!');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE') {
+      toast.error('Please type DELETE to confirm.');
+      return;
+    }
+    setDeletingUser(true);
+    try {
+      await authService.deleteAccount();
+      logout();
+      navigate(ROUTES.LOGIN);
+      toast.success('Your account has been deleted.');
+    } catch (err) {
+      toast.error('Failed to delete account.');
+    } finally {
+      setDeletingUser(false);
+    }
   };
 
   const STATS = [
@@ -76,7 +105,7 @@ const ProfilePage = () => {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Export my data
               </Button>
-              <Button variant="danger" fullWidth onClick={() => toast.warning('Please confirm this via email.')}>
+              <Button variant="danger" fullWidth onClick={() => setDeleteModalOpen(true)}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                 Delete account
               </Button>
@@ -119,6 +148,39 @@ const ProfilePage = () => {
           </Card>
         </div>
       </div>
+
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setDeleteConfirmText('');
+        }}
+        title="Delete Account"
+      >
+        <p style={{ marginBottom: '16px', color: 'var(--color-on-surface-variant)', lineHeight: 1.5 }}>
+          This action is <strong>irreversible</strong>. Your account, URLs, and all analytics data will be permanently deleted.
+        </p>
+        <p style={{ marginBottom: '16px', color: 'var(--color-on-surface-variant)', lineHeight: 1.5 }}>
+          Please type <strong>DELETE</strong> to confirm.
+        </p>
+        <Input
+          type="text"
+          placeholder="DELETE"
+          value={deleteConfirmText}
+          onChange={(e) => setDeleteConfirmText(e.target.value)}
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '24px' }}>
+          <Button variant="ghost" onClick={() => {
+            setDeleteModalOpen(false);
+            setDeleteConfirmText('');
+          }}>
+            Cancel
+          </Button>
+          <Button variant="danger" loading={deletingUser} onClick={handleDeleteAccount}>
+            Permanently delete
+          </Button>
+        </div>
+      </Modal>
     </DashboardLayout>
   );
 };

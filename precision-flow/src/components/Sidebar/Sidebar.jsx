@@ -48,7 +48,7 @@ const navItems = [
   },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ className = '' }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -58,7 +58,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="pf-sidebar">
+    <aside className={`pf-sidebar ${className}`}>
       {/* Logo */}
       <div className="pf-sidebar__logo">
         <div className="pf-sidebar__logo-icon">

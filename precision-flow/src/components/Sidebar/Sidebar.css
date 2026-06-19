@@ -12,7 +12,12 @@
   bottom: 0;
   z-index: 100;
   padding: var(--space-5) 0;
-  transition: width var(--transition-base);
+  transform: translateX(-100%);
+  transition: transform var(--transition-base), width var(--transition-base);
+}
+
+.pf-sidebar--open {
+  transform: translateX(0);
 }
 
 /* ── Logo ── */
@@ -210,12 +215,3 @@
   border-color: var(--color-error-container);
 }
 
-@media (max-width: 768px) {
-  .pf-sidebar {
-    transform: translateX(-100%);
-    transition: transform var(--transition-base);
-  }
-  .pf-sidebar--open {
-    transform: translateX(0);
-  }
-}

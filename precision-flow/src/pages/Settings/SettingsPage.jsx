@@ -40,6 +40,8 @@ const SettingsPage = () => {
   // States
   const [defaultDomain, setDefaultDomain] = useState('pfl.io');
   const [linkExpiry, setLinkExpiry] = useState('never');
+  const [trackUtm, setTrackUtm] = useState(true);
+  const [enableQrCodes, setEnableQrCodes] = useState(true);
   const [notifications, setNotifications] = useState({
     clickMilestones: true,
     weeklyReport: true,
@@ -76,6 +78,7 @@ const SettingsPage = () => {
       try {
         await authService.disable2FA();
         setIs2faEnabled(false);
+        setSetup2faOpen(false);
         if (user) setUser({ ...user, is_2fa_enabled: false });
         toast.success('2FA disabled successfully');
       } catch (err) {
@@ -105,19 +108,6 @@ const SettingsPage = () => {
       setLoading2fa(false);
     }
   };
-  const [defaultDomain, setDefaultDomain] = useState('pfl.io');
-  const [linkExpiry, setLinkExpiry] = useState('never');
-  const [notifications, setNotifications] = useState({
-    clickMilestones: true,
-    weeklyReport: true,
-    securityAlerts: true,
-    productUpdates: false,
-    marketing: false,
-  });
-  const [apiKey, setApiKey] = useState('pf_sk_••••••••••••••••••••••••••••••••');
-  const [apiKeyVisible, setApiKeyVisible] = useState(false);
-  const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
-  const [pwLoading, setPwLoading] = useState(false);
 
   const handlePasswordUpdate = async () => {
     if (!pwForm.current || !pwForm.next || !pwForm.confirm) {
@@ -190,14 +180,14 @@ const SettingsPage = () => {
                 <div className="pf-settings__divider" />
                 <Toggle
                   label="Track UTM parameters automatically"
-                  checked={true}
-                  onChange={() => {}}
+                  checked={trackUtm}
+                  onChange={() => setTrackUtm(!trackUtm)}
                 />
                 <div className="pf-settings__divider" />
                 <Toggle
                   label="Enable QR codes for all links"
-                  checked={false}
-                  onChange={() => {}}
+                  checked={enableQrCodes}
+                  onChange={() => setEnableQrCodes(!enableQrCodes)}
                 />
               </div>
               <div style={{ marginTop: 'var(--space-5)', display: 'flex', justifyContent: 'flex-end' }}>
@@ -230,7 +220,7 @@ const SettingsPage = () => {
               <div className="pf-settings__fields">
                 <Toggle 
                   label="Enable 2FA via authenticator app" 
-                  checked={is2faEnabled} 
+                  checked={is2faEnabled || setup2faOpen} 
                   onChange={handleToggle2fa} 
                 />
                 

@@ -9,6 +9,7 @@ All endpoints require authentication.
 Endpoints:
   GET /api/v1/user/profile    — get current user's profile
   PUT /api/v1/user/profile    — update current user's profile
+  DELETE /api/v1/user/account — delete current user's account
 
 NEW — these endpoints were completely missing from the original backend.
 The React ProfilePage called GET /user/profile and PUT /user/profile
@@ -69,3 +70,19 @@ def update_profile(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.delete(
+    "/account",
+    summary="Delete current user account",
+)
+def delete_account(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    """
+    Delete the authenticated user's account and all their URLs permanently.
+    """
+    db.delete(current_user)
+    db.commit()
+    return {"message": "Account deleted successfully."}

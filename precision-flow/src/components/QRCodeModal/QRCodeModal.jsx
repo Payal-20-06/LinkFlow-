@@ -7,26 +7,38 @@ const QRCodeModal = ({ url, onClose }) => {
   const svgRef = useRef(null);
 
   const downloadQRCode = () => {
-    if (!svgRef.current) return;
-    
-    // Get the SVG element
-    const svgElement = svgRef.current;
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(svgElement);
-    
-    // Add XML declaration
-    const sourceWithPrefix = '<?xml version="1.0" standalone="no"?>\r\n' + source;
-    const urlStr = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(sourceWithPrefix);
-    
-    // Create download link
-    const downloadLink = document.createElement('a');
-    downloadLink.href = urlStr;
-    // Set filename to something recognizable
-    const shortCode = url.short.split('/').pop();
-    downloadLink.download = `qr-${shortCode}.svg`;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    try {
+      if (!svgRef.current) {
+        alert('Reference to wrapper not found!');
+        return;
+      }
+      
+      const svgElement = svgRef.current.querySelector('svg');
+      if (!svgElement) {
+        alert('SVG element not found inside wrapper!');
+        return;
+      }
+      
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svgElement);
+      
+      if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      }
+      
+      const sourceWithPrefix = '<?xml version="1.0" standalone="no"?>\n' + source;
+      const urlStr = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(sourceWithPrefix);
+      
+      const downloadLink = document.createElement('a');
+      downloadLink.href = urlStr;
+      const shortCode = url.short ? url.short.split('/').pop() : 'code';
+      downloadLink.download = `qr-${shortCode}.svg`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
   };
 
   return (
@@ -44,10 +56,9 @@ const QRCodeModal = ({ url, onClose }) => {
 
         <div className="pf-qr-modal__content">
           <p className="pf-qr-modal__url mono">{url.short}</p>
-          <div className="pf-qr-modal__qr-wrapper">
+          <div className="pf-qr-modal__qr-wrapper" ref={svgRef}>
             <QRCodeSVG
               id={`qr-${url.id}`}
-              ref={svgRef}
               value={url.short}
               size={200}
               bgColor={"#ffffff"}

@@ -264,7 +264,7 @@ const URLManagementPage = () => {
               paginated.map((url) => (
                 <div key={url.id} className="pf-utbl__row">
                   <div className="pf-utbl__short">
-                    <span className="mono" style={{ color: 'var(--color-primary)' }}>{url.short}</span>
+                    <a href={url.short} target="_blank" rel="noopener noreferrer" className="mono" style={{ textDecoration: 'none', color: 'var(--color-primary)' }}>{url.short}</a>
                     {url.tags?.map((t) => <Badge key={t} size="sm" variant="outline">{t}</Badge>)}
                   </div>
 

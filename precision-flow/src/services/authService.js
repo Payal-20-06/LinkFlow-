@@ -68,4 +68,9 @@ export const authService = {
     const response = await api.post('/auth/login/2fa', { temp_token, code });
     return response.data;
   },
+
+  deleteAccount: async () => {
+    const response = await api.delete('/user/account');
+    return response.data;
+  },
 };
