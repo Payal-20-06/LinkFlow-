@@ -147,6 +147,9 @@ def forgot_password(
     """
     from app.services.email_service import send_reset_password_email
     user = db.query(User).filter(User.email == body.email).first()
+    
+    print(f"FORGOT_PASSWORD_DEBUG: Requested for {body.email}. Found in DB: {user is not None}")
+    
     if user:
         token = create_access_token(
             data={"sub": user.email, "type": "password_reset"},
