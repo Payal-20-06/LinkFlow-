@@ -8,7 +8,7 @@ import Modal from '../../components/Modal/Modal';
 import useToast from '../../hooks/useToast';
 import useDebounce from '../../hooks/useDebounce';
 import { formatNumber, formatRelativeTime, copyToClipboard, truncateUrl } from '../../utils/formatters';
-import EmptyState from '../../components/EmptyState/EmptyState';
+import { validators } from '../../utils/validators';
 import { urlService } from '../../services/urlService';
 import QRCodeModal from '../../components/QRCodeModal/QRCodeModal';
 import './URLManagementPage.css';
