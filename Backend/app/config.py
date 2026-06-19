@@ -55,6 +55,14 @@ class Settings(BaseSettings):
                 return [origin.strip() for origin in v.split(",")]
         return v
 
+    @field_validator("DATABASE_URL", mode="after")
+    @classmethod
+    def fix_postgres_url(cls, v: str) -> str:
+        """Render uses postgres:// but SQLAlchemy requires postgresql://"""
+        if v and v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v
+
 
 # Singleton — import this everywhere
 settings = Settings()
