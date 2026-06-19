@@ -170,7 +170,7 @@ const RegisterPage = () => {
         {!showEmailForm && (
           <p className="pf-auth-footer-text">
             Already have an account?{' '}
-            <Link to={ROUTES.LOGIN} className="pf-auth-link">Sign in</Link>
+            <Link to={ROUTES.LOGIN} className="pf-auth-link">Log in</Link>
           </p>
         )}
       </div>

@@ -51,7 +51,7 @@ const LoginPage = () => {
       toast.success('Signed in with Google!');
       navigate(ROUTES.DASHBOARD);
     } else {
-      toast.error(result.error || 'Google sign-in failed.');
+      toast.error(result.error || 'Google log-in failed.');
     }
   };
 
@@ -60,7 +60,7 @@ const LoginPage = () => {
       <div className="pf-auth-page">
         <div className="pf-auth-page__header">
           <h2 className="pf-auth-page__title">Welcome back</h2>
-          <p className="pf-auth-page__subtitle">Sign in to your PrecisionFlow account</p>
+          <p className="pf-auth-page__subtitle">Log in to your PrecisionFlow account</p>
         </div>
 
         {/* Auth method buttons */}
@@ -105,7 +105,7 @@ const LoginPage = () => {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
-              Back to sign-in options
+              Back to log-in options
             </button>
 
             <form onSubmit={handleSubmit} className="pf-auth-form" noValidate>
@@ -140,7 +140,7 @@ const LoginPage = () => {
               </div>
 
               <Button type="submit" variant="primary" size="lg" fullWidth loading={loading}>
-                Sign in
+                Log in
               </Button>
             </form>
           </div>
