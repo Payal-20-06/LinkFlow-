@@ -1,10 +1,10 @@
-services:
+databases:
   # 1. The PostgreSQL Database
-  - type: postgres
-    name: linkflow-db
+  - name: linkflow-db
     plan: free
-    postgresMajorVersion: 15
+    postgresMajorVersion: "15"
 
+services:
   # 2. The FastAPI Backend
   - type: web
     name: linkflow-backend
