@@ -52,7 +52,6 @@ const URLManagementPage = () => {
     try {
       const data = await urlService.getUrls({ skip: 0, limit: 100 });
       setUrls(data.urls || []);
-      setTotalUrls(data.total || 0);
     } catch (err) {
       const detail = err.response?.data?.detail;
       const msg = Array.isArray(detail) ? detail[0].msg : (detail || 'Failed to load URLs.');
