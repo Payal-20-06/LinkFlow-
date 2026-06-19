@@ -11,6 +11,7 @@ a v1 dashboard and is wired to real data (not mock).
 from __future__ import annotations
 
 from sqlalchemy.orm import Session
+from sqlalchemy import Integer
 
 from app.models.url import URL
 
@@ -26,18 +27,32 @@ def get_dashboard_stats(user_id: int, db: Session) -> dict:
       avg_ctr       — average clicks per link (proxy for CTR)
       top_urls      — top 5 URLs by click count
     """
-    urls: list[URL] = (
-        db.query(URL)
+    from sqlalchemy import func
+
+    # Aggregate total links, total clicks, and active links in one query
+    stats = (
+        db.query(
+            func.count(URL.id).label("total_links"),
+            func.sum(URL.clicks).label("total_clicks"),
+            func.sum(func.cast(URL.is_active, Integer)).label("active_links")
+        )
         .filter(URL.user_id == user_id)
-        .all()
+        .first()
     )
 
-    total_links = len(urls)
-    total_clicks = sum(u.clicks for u in urls)
-    active_links = sum(1 for u in urls if u.is_active)
+    total_links = stats.total_links or 0
+    total_clicks = stats.total_clicks or 0
+    active_links = stats.active_links or 0
     avg_ctr = round(total_clicks / total_links, 2) if total_links > 0 else 0.0
 
-    top_urls = sorted(urls, key=lambda u: u.clicks, reverse=True)[:5]
+    # Get top 5 URLs by clicks
+    top_urls = (
+        db.query(URL)
+        .filter(URL.user_id == user_id)
+        .order_by(URL.clicks.desc())
+        .limit(5)
+        .all()
+    )
 
     return {
         "total_links": total_links,

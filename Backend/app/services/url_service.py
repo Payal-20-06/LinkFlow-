@@ -153,6 +153,14 @@ def get_redirect_url(short_code: str, db: Session) -> URL:
 
 
 def track_click(url: URL, db: Session) -> None:
-    """Increment the click counter for a URL."""
-    url.clicks += 1
+    """
+    Increment the click counter atomically.
+    Uses SQL-level increment to prevent race conditions where
+    concurrent requests could read the same value and lose counts.
+    """
+    from sqlalchemy import update
+
+    db.execute(
+        update(URL).where(URL.id == url.id).values(clicks=URL.clicks + 1)
+    )
     db.commit()

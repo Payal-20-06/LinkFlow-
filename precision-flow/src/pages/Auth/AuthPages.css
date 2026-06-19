@@ -52,6 +52,84 @@
   text-decoration: underline;
 }
 
+/* ── Auth Method Buttons (Login with email / Login with Google) ── */
+.pf-auth-methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pf-auth-method-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1.5px solid var(--color-outline-variant);
+  background: transparent;
+  color: var(--color-on-surface);
+  letter-spacing: 0.01em;
+}
+
+.pf-auth-method-btn:hover {
+  border-color: var(--color-outline);
+  background: var(--color-surface-container);
+  transform: translateY(-1px);
+}
+
+.pf-auth-method-btn:active {
+  transform: translateY(0);
+}
+
+.pf-auth-method-btn--email:hover {
+  border-color: var(--color-primary-dim);
+  background: rgba(208, 191, 236, 0.06);
+}
+
+.pf-auth-method-btn--google:hover {
+  border-color: rgba(66, 133, 244, 0.5);
+  background: rgba(66, 133, 244, 0.06);
+}
+
+.pf-auth-method-btn svg {
+  flex-shrink: 0;
+}
+
+/* ── Back button ── */
+.pf-auth-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: var(--space-2);
+  transition: color var(--transition-fast);
+}
+
+.pf-auth-back-btn:hover {
+  color: var(--color-on-surface);
+}
+
+/* ── Email form wrapper ── */
+.pf-auth-email-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 /* ── Divider ── */
 .pf-auth-divider {
   display: flex;

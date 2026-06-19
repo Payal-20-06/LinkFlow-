@@ -1,7 +1,36 @@
 version: "3.9"
 
 services:
-  # ── FastAPI Backend ──────────────────────────────────────────────────────────
+  # ── PostgreSQL Database ────────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: linkflow-db
+    environment:
+      POSTGRES_USER: linkflow
+      POSTGRES_PASSWORD: securepassword
+      POSTGRES_DB: linkflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U linkflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ── Redis Cache ────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: linkflow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # ── FastAPI Backend ────────────────────────────────────────────────────────────
   backend:
     build:
       context: ./Backend
@@ -11,46 +40,41 @@ services:
       - "8000:8000"
     environment:
       APP_NAME: LinkFlow
-      DEBUG: "true"
-      SECRET_KEY: ${SECRET_KEY:-change-me-to-a-long-secret-in-production}
+      DEBUG: "false"
+      SECRET_KEY: ${SECRET_KEY:-replace-with-secure-key-in-prod}
       ALGORITHM: HS256
-      ACCESS_TOKEN_EXPIRE_MINUTES: "30"
-      # SQLite for local dev; swap for PostgreSQL in production:
-      DATABASE_URL: ${DATABASE_URL:-sqlite:///./linkflow.db}
-      CORS_ORIGINS: '["http://localhost:3000"]'
-      BASE_URL: http://localhost:8000
-    volumes:
-      - ./Backend:/app          # hot-reload in dev
-      - linkflow_db:/app/data   # persistent SQLite
-    command: >
-      uvicorn app.main:app
-      --host 0.0.0.0
-      --port 8000
-      --reload
+      ACCESS_TOKEN_EXPIRE_MINUTES: "1440"
+      DATABASE_URL: postgresql://linkflow:securepassword@db:5432/linkflow
+      REDIS_URL: redis://redis:6379/0
+      CORS_ORIGINS: '["https://your-production-domain.com"]'
+      BASE_URL: https://api.your-production-domain.com
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
     restart: unless-stopped
 
-  # ── React Frontend ────────────────────────────────────────────────────────────
+  # ── React Frontend ─────────────────────────────────────────────────────────────
   frontend:
-    image: node:20-alpine
+    build:
+      context: ./precision-flow
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: https://api.your-production-domain.com/api/v1
     container_name: linkflow-frontend
-    working_dir: /app
     ports:
-      - "3000:3000"
-    environment:
-      REACT_APP_API_URL: http://localhost:8000/api/v1
-    volumes:
-      - ./precision-flow:/app
-    command: sh -c "npm install && npm start"
+      - "80:80"
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
 
 volumes:
-  linkflow_db:
+  postgres_data:
+  redis_data:

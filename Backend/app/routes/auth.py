@@ -21,6 +21,7 @@ from app.auth.hashing import hash_password, verify_password
 from app.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
+from app.schemas.google import GoogleLoginRequest
 from app.schemas.user import (
     ChangePasswordRequest,
     ForgotPasswordRequest,
@@ -29,7 +30,7 @@ from app.schemas.user import (
     UserInToken,
     UserLogin,
 )
-from app.services.auth_service import authenticate_user, register_user
+from app.services.auth_service import authenticate_user, google_login, register_user
 
 router = APIRouter()
 
@@ -81,6 +82,24 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)) -> Token:
     Frontend stored data.user → undefined → localStorage crash on reload.
     """
     result = authenticate_user(credentials.email, credentials.password, db)
+    return _make_token_response(result)
+
+
+@router.post(
+    "/google",
+    response_model=Token,
+    summary="Authenticate with Google OAuth",
+)
+def login_with_google(
+    body: GoogleLoginRequest,
+    db: Session = Depends(get_db),
+) -> Token:
+    """
+    Verify a Google ID token and return a JWT + user object.
+    Creates a new account if the Google user doesn't exist.
+    Links Google to an existing account if the email matches.
+    """
+    result = google_login(body.id_token, db)
     return _make_token_response(result)
 
 

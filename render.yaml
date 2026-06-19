@@ -1,0 +1,25 @@
+services:
+  # 1. The PostgreSQL Database
+  - type: pgo
+    name: linkflow-db
+    plan: free
+    postgresMajorVersion: 15
+
+  # 2. The FastAPI Backend
+  - type: web
+    name: linkflow-backend
+    env: python
+    plan: free
+    buildCommand: "cd Backend && pip install -r requirements.txt && python -m alembic upgrade head"
+    startCommand: "cd Backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: linkflow-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: '["https://your-vercel-app-url.vercel.app"]' # Reminder to update this later
+      - key: GOOGLE_CLIENT_ID
+        value: '78361509176-jthrqsmcuohr1drp20bjs6rqt0kbahj0.apps.googleusercontent.com'

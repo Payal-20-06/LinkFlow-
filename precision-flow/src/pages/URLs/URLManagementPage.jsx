@@ -49,11 +49,12 @@ const URLManagementPage = () => {
   const loadUrls = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await urlService.getUrls({ skip: 0, limit: 200 });
+      const data = await urlService.getUrls({ skip: 0, limit: 100 });
       setUrls(data.urls || []);
       setTotalUrls(data.total || 0);
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to load URLs.';
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail) ? detail[0].msg : (detail || 'Failed to load URLs.');
       toast.error(msg);
       setUrls([]);
     } finally {
@@ -115,7 +116,8 @@ const URLManagementPage = () => {
       setCreateOpen(false);
       loadUrls(); // Refresh list from API
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to create link.';
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail) ? detail[0].msg : (detail || 'Failed to create link.');
       setFormError(msg);
     } finally {
       setSaving(false);
@@ -139,7 +141,8 @@ const URLManagementPage = () => {
       setEditTarget(null);
       loadUrls();
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to update link.';
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail) ? detail[0].msg : (detail || 'Failed to update link.');
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -155,7 +158,8 @@ const URLManagementPage = () => {
       setDeleteTarget(null);
       loadUrls();
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to delete link.';
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail) ? detail[0].msg : (detail || 'Failed to delete link.');
       toast.error(msg);
     } finally {
       setDeleting(false);

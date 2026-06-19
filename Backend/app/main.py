@@ -27,6 +27,10 @@ from fastapi import Depends, FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.config import settings
 from app.database import Base, engine, get_db
@@ -55,7 +59,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Run startup and shutdown logic."""
     # Startup
     logger.info("Starting %s …", settings.APP_NAME)
-    Base.metadata.create_all(bind=engine)
+    # Schema managed by Alembic migrations.
+    # For local dev with SQLite, run: alembic upgrade head
+    # For docker, migrations run automatically.
+    Base.metadata.create_all(bind=engine)  # Fallback for dev — Alembic is preferred
     logger.info("Database tables verified.")
     yield
     # Shutdown
@@ -78,14 +85,29 @@ app = FastAPI(
 )
 
 
+# ── Rate Limiter ──────────────────────────────────────────────────────────────
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
 # ── Middleware ────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def secure_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 
 # ── Request logging ───────────────────────────────────────────────────────────
@@ -137,31 +159,36 @@ def health_check() -> dict:
 
 
 # ── Redirect ──────────────────────────────────────────────────────────────────
+from fastapi.responses import RedirectResponse as _RedirectResponse
+
 @app.get(
     "/{short_code}",
     tags=["Redirect"],
-    response_class=RedirectResponse,
+    response_class=_RedirectResponse,
     status_code=status.HTTP_302_FOUND,
     summary="Redirect short URL to original destination",
     include_in_schema=False,
 )
+@limiter.limit("60/minute")
 def redirect_short_url(
     short_code: str,
+    request: Request,
     db: Session = Depends(get_db),
-) -> RedirectResponse:
+):
     """
     Look up short_code and redirect to the original URL.
-
-    FIXED multiple issues from original main.py:
-      - Session was opened manually (SessionLocal()) and never closed
-        on the exception path → connection leak
-      - Returned {"error": "URL not found"} with HTTP 200 — now raises 404
-      - Now uses Depends(get_db) — session is always properly closed
-      - Returns HTTP 302 (temporary redirect, correct for URL shorteners)
     """
-    url = get_redirect_url(short_code, db)  # raises 404 if not found
-    track_click(url, db)
-    return RedirectResponse(url=url.original_url, status_code=status.HTTP_302_FOUND)
+    from fastapi import HTTPException
+    try:
+        url = get_redirect_url(short_code, db)
+        track_click(url, db)
+        return _RedirectResponse(url=url.original_url, status_code=status.HTTP_302_FOUND)
+    except HTTPException as e:
+        if e.status_code == status.HTTP_404_NOT_FOUND:
+            # Redirect invalid links to the frontend's 404 page
+            frontend_url = settings.CORS_ORIGINS[0] if settings.CORS_ORIGINS else "http://localhost:3000"
+            return _RedirectResponse(url=f"{frontend_url.rstrip('/')}/404", status_code=status.HTTP_302_FOUND)
+        raise
 
 
 # ── Global exception handler ──────────────────────────────────────────────────

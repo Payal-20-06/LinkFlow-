@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          cd Backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx
+
+      - name: Run Pytest
+        run: |
+          cd Backend
+          # Note: We need a test database set up or mock here in a real scenario
+          export DATABASE_URL="sqlite:///./test.db"
+          pytest
+
+  build-and-push:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Backend
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/linkflow-backend:latest ./Backend
+          docker push ${{ secrets.DOCKER_USERNAME }}/linkflow-backend:latest
+
+      - name: Build and Push Frontend
+        run: |
+          docker build --build-arg REACT_APP_API_URL=https://api.your-production-domain.com/api/v1 -t ${{ secrets.DOCKER_USERNAME }}/linkflow-frontend:latest ./precision-flow
+          docker push ${{ secrets.DOCKER_USERNAME }}/linkflow-frontend:latest

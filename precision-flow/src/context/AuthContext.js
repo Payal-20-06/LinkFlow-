@@ -122,6 +122,68 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const googleLogin = () => {
+    return new Promise((resolve) => {
+      dispatch({ type: 'AUTH_LOADING' });
+
+      // Check if Google GSI is loaded
+      if (!window.google?.accounts?.id) {
+        dispatch({ type: 'AUTH_ERROR', payload: 'Google Sign-In is not available. Please refresh the page.' });
+        resolve({ success: false, error: 'Google Sign-In not loaded.' });
+        return;
+      }
+
+      // Initialize the Google client
+      window.google.accounts.id.initialize({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '',
+        callback: async (response) => {
+          try {
+            const data = await authService.googleLogin(response.credential);
+            localStorage.setItem('pf_token', data.access_token);
+            localStorage.setItem('pf_user', JSON.stringify(data.user));
+            dispatch({
+              type: 'AUTH_SUCCESS',
+              payload: { user: data.user, token: data.access_token },
+            });
+            resolve({ success: true });
+          } catch (err) {
+            const msg =
+              err.response?.data?.detail ||
+              err.response?.data?.message ||
+              'Google sign-in failed.';
+            dispatch({ type: 'AUTH_ERROR', payload: msg });
+            resolve({ success: false, error: msg });
+          }
+        },
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+
+      // Trigger the Google popup
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          // Fallback: use the popup-based flow
+          window.google.accounts.id.renderButton(
+            document.createElement('div'),
+            { type: 'standard' }
+          );
+          // Try the One Tap flow or show a manual popup
+          const btn = document.createElement('div');
+          btn.id = 'google-signin-temp';
+          btn.style.display = 'none';
+          document.body.appendChild(btn);
+          window.google.accounts.id.renderButton(btn, {
+            type: 'standard',
+            size: 'large',
+          });
+          const rendered = btn.querySelector('[role="button"]');
+          if (rendered) rendered.click();
+          setTimeout(() => btn.remove(), 100);
+        }
+      });
+    });
+  };
+
   const logout = () => {
     localStorage.removeItem('pf_token');
     localStorage.removeItem('pf_user');
@@ -142,6 +204,7 @@ export const AuthProvider = ({ children }) => {
     ...state,
     login,
     register,
+    googleLogin,
     logout,
     updateUser,
     clearError,

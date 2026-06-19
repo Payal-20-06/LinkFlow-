@@ -130,7 +130,8 @@ const DashboardPage = () => {
       setCreateOpen(false);
       loadDashboard(); // Refresh stats
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to create link.';
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail) ? detail[0].msg : (detail || 'Failed to create link.');
       toast.error(msg);
     } finally {
       setCreating(false);

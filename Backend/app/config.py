@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     # ── Short links ───────────────────────────────────────────────────────────
     BASE_URL: str = "http://localhost:8000"
 
+    # ── Google OAuth ──────────────────────────────────────────────────────────
+    GOOGLE_CLIENT_ID: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
