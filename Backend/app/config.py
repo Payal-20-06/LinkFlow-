@@ -33,6 +33,16 @@ class Settings(BaseSettings):
     # ── Short links ───────────────────────────────────────────────────────────
     BASE_URL: str = "http://localhost:8000"
 
+    @field_validator("BASE_URL", mode="before")
+    @classmethod
+    def auto_detect_render_url(cls, v: str) -> str:
+        """Automatically use Render's production URL if deployed there."""
+        import os
+        render_url = os.environ.get("RENDER_EXTERNAL_URL")
+        if render_url:
+            return render_url
+        return v
+
     # ── Google OAuth ──────────────────────────────────────────────────────────
     GOOGLE_CLIENT_ID: str = ""
 
