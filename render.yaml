@@ -11,7 +11,7 @@ services:
     env: python
     plan: free
     buildCommand: "cd Backend && pip install -r requirements.txt"
-    startCommand: "cd Backend && python -m alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    startCommand: "bash -c 'cd Backend && python -m alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT'"
     envVars:
       - key: PYTHON_VERSION
         value: '3.11.0'
