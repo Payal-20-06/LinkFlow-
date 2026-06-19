@@ -1,0 +1,95 @@
+.pf-qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-4);
+}
+
+.pf-qr-modal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-qr-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.pf-qr-modal__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+}
+
+.pf-qr-modal__close {
+  background: none;
+  border: none;
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.pf-qr-modal__close:hover {
+  background: var(--color-surface-container);
+  color: var(--color-on-surface);
+}
+
+.pf-qr-modal__content {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.pf-qr-modal__url {
+  font-size: var(--text-body-sm);
+  color: var(--color-primary);
+  margin: 0;
+  text-align: center;
+  word-break: break-all;
+  background: rgba(208, 191, 236, 0.1);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+.pf-qr-modal__qr-wrapper {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pf-qr-modal__footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-container);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}

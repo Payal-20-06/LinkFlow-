@@ -8,8 +8,9 @@ import Modal from '../../components/Modal/Modal';
 import useToast from '../../hooks/useToast';
 import useDebounce from '../../hooks/useDebounce';
 import { formatNumber, formatRelativeTime, copyToClipboard, truncateUrl } from '../../utils/formatters';
-import { validators } from '../../utils/validators';
+import EmptyState from '../../components/EmptyState/EmptyState';
 import { urlService } from '../../services/urlService';
+import QRCodeModal from '../../components/QRCodeModal/QRCodeModal';
 import './URLManagementPage.css';
 
 const SORT_OPTIONS = [
@@ -29,6 +30,7 @@ const URLManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('date_desc');
+  const [qrUrl, setQrUrl] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [totalUrls, setTotalUrls] = useState(0);
@@ -304,6 +306,15 @@ const URLManagementPage = () => {
                         : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
                       }
                     </button>
+                    <button className="pf-utbl__action-btn" onClick={() => setQrUrl(url)} title="QR Code">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <rect x="7" y="7" width="3" height="3"/>
+                        <rect x="14" y="7" width="3" height="3"/>
+                        <rect x="7" y="14" width="3" height="3"/>
+                        <rect x="14" y="14" width="3" height="3"/>
+                      </svg>
+                    </button>
                     <button className="pf-utbl__action-btn" onClick={() => handleEditOpen(url)} title="Edit">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -459,6 +470,8 @@ const URLManagementPage = () => {
           </p>
         )}
       </Modal>
+
+      {qrUrl && <QRCodeModal url={qrUrl} onClose={() => setQrUrl(null)} />}
     </DashboardLayout>
   );
 };
