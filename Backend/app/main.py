@@ -158,6 +158,12 @@ def health_check() -> dict:
     }
 
 
+@app.get("/", tags=["Health"], include_in_schema=False)
+def root_health_check() -> dict:
+    """Root route for Render default health checks."""
+    return {"status": "ok"}
+
+
 # ── Redirect ──────────────────────────────────────────────────────────────────
 from fastapi.responses import RedirectResponse as _RedirectResponse
 
