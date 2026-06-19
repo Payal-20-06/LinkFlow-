@@ -4,7 +4,9 @@ import Card, { CardHeader } from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
 import useToast from '../../hooks/useToast';
+import useAuth from '../../hooks/useAuth';
 import { authService } from '../../services/authService';
+import { QRCodeSVG } from 'qrcode.react';
 import './SettingsPage.css';
 
 const SECTIONS = [
@@ -32,9 +34,77 @@ const Toggle = ({ checked, onChange, label }) => (
 
 const SettingsPage = () => {
   const { toast } = useToast();
+  const { user, setUser } = useAuth();
   const [active, setActive] = useState('general');
 
   // States
+  const [defaultDomain, setDefaultDomain] = useState('pfl.io');
+  const [linkExpiry, setLinkExpiry] = useState('never');
+  const [notifications, setNotifications] = useState({
+    clickMilestones: true,
+    weeklyReport: true,
+    securityAlerts: true,
+    productUpdates: false,
+    marketing: false,
+  });
+  const [apiKey, setApiKey] = useState('pf_sk_••••••••••••••••••••••••••••••••');
+  const [apiKeyVisible, setApiKeyVisible] = useState(false);
+  const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
+  const [pwLoading, setPwLoading] = useState(false);
+
+  // 2FA States
+  const [is2faEnabled, setIs2faEnabled] = useState(user?.is_2fa_enabled || false);
+  const [setup2faOpen, setSetup2faOpen] = useState(false);
+  const [setup2faData, setSetup2faData] = useState(null);
+  const [code2fa, setCode2fa] = useState('');
+  const [loading2fa, setLoading2fa] = useState(false);
+
+  const handleToggle2fa = async (checked) => {
+    if (checked) {
+      setLoading2fa(true);
+      try {
+        const data = await authService.setup2FA();
+        setSetup2faData(data);
+        setSetup2faOpen(true);
+      } catch (err) {
+        toast.error('Failed to start 2FA setup');
+      } finally {
+        setLoading2fa(false);
+      }
+    } else {
+      setLoading2fa(true);
+      try {
+        await authService.disable2FA();
+        setIs2faEnabled(false);
+        if (user) setUser({ ...user, is_2fa_enabled: false });
+        toast.success('2FA disabled successfully');
+      } catch (err) {
+        toast.error('Failed to disable 2FA');
+      } finally {
+        setLoading2fa(false);
+      }
+    }
+  };
+
+  const handleVerify2fa = async () => {
+    if (!code2fa || code2fa.length !== 6) {
+      toast.error('Please enter a 6-digit code');
+      return;
+    }
+    setLoading2fa(true);
+    try {
+      await authService.verify2FA(code2fa);
+      setIs2faEnabled(true);
+      setSetup2faOpen(false);
+      if (user) setUser({ ...user, is_2fa_enabled: true });
+      toast.success('2FA enabled successfully!');
+      setCode2fa('');
+    } catch (err) {
+      toast.error('Invalid code. Please try again.');
+    } finally {
+      setLoading2fa(false);
+    }
+  };
   const [defaultDomain, setDefaultDomain] = useState('pfl.io');
   const [linkExpiry, setLinkExpiry] = useState('never');
   const [notifications, setNotifications] = useState({
@@ -158,7 +228,39 @@ const SettingsPage = () => {
             <Card padding="md">
               <CardHeader title="Two-Factor Authentication" subtitle="Add an extra layer of security" />
               <div className="pf-settings__fields">
-                <Toggle label="Enable 2FA via authenticator app" checked={false} onChange={() => toast.info('2FA setup not available in demo.')} />
+                <Toggle 
+                  label="Enable 2FA via authenticator app" 
+                  checked={is2faEnabled} 
+                  onChange={handleToggle2fa} 
+                />
+                
+                {setup2faOpen && setup2faData && (
+                  <div style={{ marginTop: 16, padding: '24px', background: 'var(--color-surface-container-high)', borderRadius: 'var(--radius)', border: '1px solid var(--color-surface-container-highest)' }}>
+                    <h4 style={{ margin: '0 0 16px 0', fontSize: 16 }}>Scan this QR Code</h4>
+                    <p style={{ margin: '0 0 16px 0', fontSize: 14, color: 'var(--color-on-surface-variant)' }}>
+                      Open Google Authenticator or Authy and scan the code below.
+                    </p>
+                    <div style={{ background: 'white', padding: 16, display: 'inline-block', borderRadius: 8, marginBottom: 16 }}>
+                      <QRCodeSVG value={setup2faData.provisioning_uri} size={160} />
+                    </div>
+                    <p style={{ margin: '0 0 16px 0', fontSize: 14, color: 'var(--color-on-surface-variant)' }}>
+                      Or enter this code manually: <strong className="mono" style={{ color: 'var(--color-on-surface)' }}>{setup2faData.secret}</strong>
+                    </p>
+                    <div style={{ maxWidth: 200 }}>
+                      <Input 
+                        label="6-digit code" 
+                        value={code2fa} 
+                        onChange={(e) => setCode2fa(e.target.value)} 
+                        maxLength={6}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+                      <Button variant="primary" onClick={handleVerify2fa} loading={loading2fa}>Verify & Enable</Button>
+                      <Button variant="ghost" onClick={() => setSetup2faOpen(false)}>Cancel</Button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="pf-settings__divider" />
                 <Toggle label="Require 2FA for team members" checked={false} onChange={() => {}} />
               </div>

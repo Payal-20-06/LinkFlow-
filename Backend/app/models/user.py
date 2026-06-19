@@ -40,6 +40,10 @@ class User(Base):
     auth_provider: Mapped[str] = mapped_column(String(20), default="local", nullable=False)
     google_id: Mapped[str | None] = mapped_column(String(255), unique=True, nullable=True)
 
+    # 2FA
+    is_2fa_enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    totp_secret: Mapped[str | None] = mapped_column(String(32), nullable=True)
+
     # Profile extras
     plan: Mapped[str] = mapped_column(String(50), default="Free", nullable=False)
     company: Mapped[str | None] = mapped_column(String(100), nullable=True)

@@ -65,6 +65,20 @@ class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
 
+class Setup2FAResponse(BaseModel):
+    secret: str
+    provisioning_uri: str
+
+
+class Verify2FARequest(BaseModel):
+    code: str
+
+
+class Login2FARequest(BaseModel):
+    temp_token: str
+    code: str
+
+
 # ── Response schemas ──────────────────────────────────────────────────────────
 
 class UserResponse(BaseModel):
@@ -78,6 +92,7 @@ class UserResponse(BaseModel):
     bio: Optional[str] = None
     avatar: Optional[str] = None
     is_active: bool
+    is_2fa_enabled: bool = False
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -95,6 +110,7 @@ class UserInToken(BaseModel):
     email: str
     plan: str
     avatar: Optional[str] = None
+    is_2fa_enabled: bool = False
 
 
 class Token(BaseModel):

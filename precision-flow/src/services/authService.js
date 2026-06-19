@@ -48,4 +48,24 @@ export const authService = {
     const response = await api.post('/auth/change-password', data);
     return response.data;
   },
+
+  setup2FA: async () => {
+    const response = await api.post('/auth/2fa/setup');
+    return response.data;
+  },
+
+  verify2FA: async (code) => {
+    const response = await api.post('/auth/2fa/verify', { code });
+    return response.data;
+  },
+
+  disable2FA: async () => {
+    const response = await api.post('/auth/2fa/disable');
+    return response.data;
+  },
+
+  login2FA: async (temp_token, code) => {
+    const response = await api.post('/auth/login/2fa', { temp_token, code });
+    return response.data;
+  },
 };

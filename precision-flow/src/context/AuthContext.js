@@ -77,8 +77,12 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'AUTH_LOADING' });
     try {
       const data = await authService.login(credentials);
-      // FIXED: Backend now returns { access_token, token_type, user }
-      // Original backend returned no user object → AuthContext crashed
+      
+      if (data.requires_2fa) {
+        dispatch({ type: 'AUTH_LOADING' }); // Just clear loading state soon
+        return { success: true, requires_2fa: true, temp_token: data.temp_token };
+      }
+
       localStorage.setItem('pf_token', data.access_token);
       localStorage.setItem('pf_user', JSON.stringify(data.user));
       dispatch({
@@ -92,6 +96,24 @@ export const AuthProvider = ({ children }) => {
         err.response?.data?.detail ||
         err.response?.data?.message ||
         'Login failed. Please try again.';
+      dispatch({ type: 'AUTH_ERROR', payload: msg });
+      return { success: false, error: msg };
+    }
+  };
+
+  const completeLogin2FA = async (temp_token, code) => {
+    dispatch({ type: 'AUTH_LOADING' });
+    try {
+      const data = await authService.login2FA(temp_token, code);
+      localStorage.setItem('pf_token', data.access_token);
+      localStorage.setItem('pf_user', JSON.stringify(data.user));
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user: data.user, token: data.access_token },
+      });
+      return { success: true };
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Invalid 2FA code.';
       dispatch({ type: 'AUTH_ERROR', payload: msg });
       return { success: false, error: msg };
     }
@@ -203,6 +225,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     ...state,
     login,
+    completeLogin2FA,
     register,
     googleLogin,
     logout,

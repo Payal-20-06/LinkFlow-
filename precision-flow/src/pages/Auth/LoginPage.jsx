@@ -10,7 +10,7 @@ import { ROUTES } from '../../utils/constants';
 import './AuthPages.css';
 
 const LoginPage = () => {
-  const { login, googleLogin } = useAuth();
+  const { login, completeLogin2FA, googleLogin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -18,6 +18,10 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
+  
+  const [show2faForm, setShow2faForm] = useState(false);
+  const [tempToken, setTempToken] = useState(null);
+  const [code2fa, setCode2fa] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,10 +42,34 @@ const LoginPage = () => {
     setLoading(false);
 
     if (result.success) {
+      if (result.requires_2fa) {
+        setTempToken(result.temp_token);
+        setShow2faForm(true);
+        setShowEmailForm(false);
+      } else {
+        toast.success('Welcome back! Redirecting…');
+        navigate(ROUTES.DASHBOARD);
+      }
+    } else {
+      toast.error(result.error || 'Login failed.');
+    }
+  };
+
+  const handle2faSubmit = async (e) => {
+    e.preventDefault();
+    if (!code2fa || code2fa.length !== 6) {
+      toast.error('Please enter a 6-digit code');
+      return;
+    }
+    setLoading(true);
+    const result = await completeLogin2FA(tempToken, code2fa);
+    setLoading(false);
+
+    if (result.success) {
       toast.success('Welcome back! Redirecting…');
       navigate(ROUTES.DASHBOARD);
     } else {
-      toast.error(result.error || 'Login failed.');
+      // Don't auto-clear the code, let them try again or click back
     }
   };
 
@@ -146,7 +174,43 @@ const LoginPage = () => {
           </div>
         )}
 
-        {!showEmailForm && (
+        {/* 2FA Form */}
+        {show2faForm && (
+          <div className="pf-auth-email-form anim-fadeInUp">
+            <button
+              className="pf-auth-back-btn"
+              onClick={() => { setShow2faForm(false); setShowEmailForm(true); }}
+              type="button"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+              Back to log-in
+            </button>
+            <form onSubmit={handle2faSubmit} className="pf-auth-form" noValidate>
+              <p style={{ color: 'var(--color-on-surface-variant)', fontSize: 14, marginBottom: 16 }}>
+                Enter the 6-digit code from your authenticator app to continue.
+              </p>
+              <Input
+                label="Authenticator Code"
+                type="text"
+                name="code2fa"
+                id="login-code2fa"
+                placeholder="123456"
+                value={code2fa}
+                onChange={(e) => setCode2fa(e.target.value)}
+                maxLength={6}
+                autoComplete="one-time-code"
+                autoFocus
+              />
+              <Button type="submit" variant="primary" size="lg" fullWidth loading={loading}>
+                Verify Code
+              </Button>
+            </form>
+          </div>
+        )}
+
+        {!showEmailForm && !show2faForm && (
           <p className="pf-auth-footer-text">
             Don't have an account?{' '}
             <Link to={ROUTES.REGISTER} className="pf-auth-link">Create one free</Link>

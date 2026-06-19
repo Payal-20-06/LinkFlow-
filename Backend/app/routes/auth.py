@@ -17,6 +17,11 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from datetime import timedelta
+import pyotp
+from fastapi import HTTPException
+
+from app.auth.jwt import create_access_token, decode_access_token
 from app.auth.hashing import hash_password, verify_password
 from app.database import get_db
 from app.dependencies.auth import get_current_user
@@ -29,6 +34,9 @@ from app.schemas.user import (
     UserCreate,
     UserInToken,
     UserLogin,
+    Setup2FAResponse,
+    Verify2FARequest,
+    Login2FARequest,
 )
 from app.services.auth_service import authenticate_user, google_login, register_user
 
@@ -71,18 +79,23 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)) -> Token:
 
 @router.post(
     "/login",
-    response_model=Token,
-    summary="Authenticate and get access token",
+    status_code=status.HTTP_200_OK,
+    summary="Login to get access token",
 )
-def login(credentials: UserLogin, db: Session = Depends(get_db)) -> Token:
+def login(credentials: UserLogin, db: Session = Depends(get_db)) -> dict:
     """
-    Validate credentials and return JWT + user object.
-
-    FIXED: original returned { access_token, token_type } with no user object.
-    Frontend stored data.user → undefined → localStorage crash on reload.
+    Authenticate user. If 2FA is enabled, returns a temporary token.
+    Otherwise, returns the final JWT access token.
     """
     result = authenticate_user(credentials.email, credentials.password, db)
-    return _make_token_response(result)
+    user: User = result["user"]
+    if user.is_2fa_enabled:
+        temp_token = create_access_token(
+            data={"sub": str(user.id), "type": "2fa_temp"},
+            expires_delta=timedelta(minutes=5)
+        )
+        return {"requires_2fa": True, "temp_token": temp_token}
+    return _make_token_response(result).model_dump()
 
 
 @router.post(
@@ -165,3 +178,80 @@ def change_password(
     current_user.hashed_password = hash_password(body.new_password)
     db.commit()
     return {"message": "Password updated successfully."}
+
+
+# ── 2FA ───────────────────────────────────────────────────────────────────────
+
+@router.post(
+    "/2fa/setup",
+    response_model=Setup2FAResponse,
+    summary="Setup 2FA",
+)
+def setup_2fa(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> dict:
+    secret = pyotp.random_base32()
+    current_user.totp_secret = secret
+    db.commit()
+    uri = pyotp.totp.TOTP(secret).provisioning_uri(
+        name=current_user.email,
+        issuer_name="LinkFlow"
+    )
+    return {"secret": secret, "provisioning_uri": uri}
+
+
+@router.post(
+    "/2fa/verify",
+    summary="Verify and Enable 2FA",
+)
+def verify_2fa(body: Verify2FARequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> dict:
+    if not current_user.totp_secret:
+        raise HTTPException(status_code=400, detail="2FA not setup.")
+    totp = pyotp.TOTP(current_user.totp_secret)
+    if not totp.verify(body.code):
+        raise HTTPException(status_code=400, detail="Invalid 2FA code.")
+    
+    current_user.is_2fa_enabled = True
+    db.commit()
+    return {"message": "2FA enabled successfully."}
+
+
+@router.post(
+    "/2fa/disable",
+    summary="Disable 2FA",
+)
+def disable_2fa(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> dict:
+    current_user.is_2fa_enabled = False
+    current_user.totp_secret = None
+    db.commit()
+    return {"message": "2FA disabled successfully."}
+
+
+@router.post(
+    "/login/2fa",
+    summary="Complete 2FA login",
+)
+def login_2fa(body: Login2FARequest, db: Session = Depends(get_db)) -> dict:
+    payload = decode_access_token(body.temp_token)
+    if not payload or payload.get("type") != "2fa_temp":
+        raise HTTPException(status_code=401, detail="Invalid temporary token.")
+    
+    user = db.query(User).filter(User.id == int(payload.get("sub"))).first()
+    if not user or not user.is_2fa_enabled or not user.totp_secret:
+        raise HTTPException(status_code=400, detail="2FA not configured.")
+        
+    totp = pyotp.TOTP(user.totp_secret)
+    if not totp.verify(body.code):
+        raise HTTPException(status_code=400, detail="Invalid 2FA code.")
+        
+    access_token = create_access_token(data={"sub": str(user.id)})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "plan": user.plan,
+            "avatar": user.avatar,
+            "is_2fa_enabled": user.is_2fa_enabled,
+        },
+    }
