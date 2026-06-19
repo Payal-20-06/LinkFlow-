@@ -1,6 +1,6 @@
 services:
   # 1. The PostgreSQL Database
-  - type: pgo
+  - type: postgres
     name: linkflow-db
     plan: free
     postgresMajorVersion: 15
