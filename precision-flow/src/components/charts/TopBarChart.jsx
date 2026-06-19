@@ -23,7 +23,7 @@ const CustomTooltip = ({ active, payload, label }) => {
     }}>
       <p style={{ color: 'var(--color-on-surface-variant)', marginBottom: 4, fontSize: 12 }}>{label}</p>
       {payload.map((p) => (
-        <p key={p.dataKey} style={{ color: '#d0bfec', fontWeight: 600, margin: 0 }}>
+        <p key={p.dataKey} style={{ color: 'var(--chart-primary)', fontWeight: 600, margin: 0 }}>
           {p.value?.toLocaleString()} clicks
         </p>
       ))}
@@ -53,7 +53,7 @@ const TopBarChart = ({ data = [], height = 240, dataKey = 'clicks', nameKey = 'c
       <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(208,191,236,0.06)' }} />
       <Bar dataKey={dataKey} radius={[0, 4, 4, 0]} maxBarSize={20}>
         {data.map((_, i) => (
-          <Cell key={i} fill={i === 0 ? '#d0bfec' : i === 1 ? '#cdc2dc' : 'var(--color-surface-container-highest)'} />
+          <Cell key={i} fill={i === 0 ? 'var(--chart-primary)' : i === 1 ? 'var(--chart-secondary)' : 'var(--color-surface-container-highest)'} />
         ))}
       </Bar>
     </BarChart>

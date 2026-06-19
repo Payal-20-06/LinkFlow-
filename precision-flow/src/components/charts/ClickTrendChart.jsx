@@ -35,12 +35,12 @@ const ClickTrendChart = ({ data = [], height = 280 }) => (
     <AreaChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
       <defs>
         <linearGradient id="clickGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%"  stopColor="#d0bfec" stopOpacity={0.25} />
-          <stop offset="95%" stopColor="#d0bfec" stopOpacity={0} />
+          <stop offset="5%"  stopColor="var(--chart-primary)" stopOpacity={0.25} />
+          <stop offset="95%" stopColor="var(--chart-primary)" stopOpacity={0} />
         </linearGradient>
         <linearGradient id="uniqueGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%"  stopColor="#ffd8ee" stopOpacity={0.2} />
-          <stop offset="95%" stopColor="#ffd8ee" stopOpacity={0} />
+          <stop offset="5%"  stopColor="var(--chart-secondary)" stopOpacity={0.2} />
+          <stop offset="95%" stopColor="var(--chart-secondary)" stopOpacity={0} />
         </linearGradient>
       </defs>
       <CartesianGrid stroke="var(--color-outline-variant)" strokeDasharray="4 4" vertical={false} />
@@ -61,21 +61,21 @@ const ClickTrendChart = ({ data = [], height = 280 }) => (
         type="monotone"
         dataKey="clicks"
         name="Total Clicks"
-        stroke="#d0bfec"
+        stroke="var(--chart-primary)"
         strokeWidth={2}
         fill="url(#clickGrad)"
         dot={false}
-        activeDot={{ r: 5, fill: '#d0bfec', stroke: '#0f0d11', strokeWidth: 2 }}
+        activeDot={{ r: 5, fill: 'var(--chart-primary)', stroke: '#0f0d11', strokeWidth: 2 }}
       />
       <Area
         type="monotone"
         dataKey="unique"
         name="Unique Visitors"
-        stroke="#ffd8ee"
+        stroke="var(--chart-secondary)"
         strokeWidth={2}
         fill="url(#uniqueGrad)"
         dot={false}
-        activeDot={{ r: 5, fill: '#ffd8ee', stroke: '#0f0d11', strokeWidth: 2 }}
+        activeDot={{ r: 5, fill: 'var(--chart-secondary)', stroke: '#0f0d11', strokeWidth: 2 }}
       />
     </AreaChart>
   </ResponsiveContainer>

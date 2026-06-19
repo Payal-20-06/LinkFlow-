@@ -8,7 +8,7 @@ import {
   Legend,
 } from 'recharts';
 
-const COLORS = ['#d0bfec', '#ffd8ee', '#cdc2dc', '#c2b1dd', '#edb7d8'];
+const COLORS = ['var(--chart-primary)', 'var(--chart-secondary)', 'var(--chart-tertiary)', 'var(--chart-4)', 'var(--chart-5)'];
 
 const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
