@@ -7,6 +7,11 @@ A modern, high-performance URL shortener with advanced analytics, Google OAuth i
   <img src="docs/frontend-screenshot.png" alt="Frontend Dashboard" width="800"/>
 </div>
 
+## 🌐 Live Demo
+- **Frontend (Vercel):** [https://linkflow-app.vercel.app](https://linkflow-app.vercel.app)
+- **Backend API (Render):** [https://linkflow-backend-x02k.onrender.com](https://linkflow-backend-x02k.onrender.com)
+
+
 ## ✨ Features
 - **Secure Authentication:** Manual email/password login and seamless one-click Google OAuth.
 - **URL Management:** Shorten long URLs instantly with custom aliases.
