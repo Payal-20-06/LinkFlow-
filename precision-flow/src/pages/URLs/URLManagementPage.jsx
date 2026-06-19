@@ -33,7 +33,6 @@ const URLManagementPage = () => {
   const [qrUrl, setQrUrl] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(1);
-  const [totalUrls, setTotalUrls] = useState(0);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);

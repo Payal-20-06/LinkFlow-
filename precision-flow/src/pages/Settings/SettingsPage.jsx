@@ -49,7 +49,7 @@ const SettingsPage = () => {
     productUpdates: false,
     marketing: false,
   });
-  const [apiKey, setApiKey] = useState('pf_sk_••••••••••••••••••••••••••••••••');
+  const [apiKey] = useState('pf_sk_••••••••••••••••••••••••••••••••');
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
   const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
   const [pwLoading, setPwLoading] = useState(false);
