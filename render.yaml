@@ -22,6 +22,6 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: '["https://your-vercel-app-url.vercel.app"]' # Reminder to update this later
+        value: '["https://link-flow-9et0iw32f-payalbsd2004-7135s-projects.vercel.app", "https://link-flow-1496-nzhrxeclc-payalbsd2004-7135s-projects.vercel.app", "https://linkflow-app-pruijgoek-payalbsd2004-7135s-projects.vercel.app", "https://linkflow-app.vercel.app"]'
       - key: GOOGLE_CLIENT_ID
         value: '78361509176-jthrqsmcuohr1drp20bjs6rqt0kbahj0.apps.googleusercontent.com'
