@@ -10,6 +10,7 @@ import LandingPage      from './pages/Landing/LandingPage';
 import LoginPage        from './pages/Auth/LoginPage';
 import RegisterPage     from './pages/Auth/RegisterPage';
 import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
+import ResetPasswordPage  from './pages/Auth/ResetPasswordPage';
 import DashboardPage    from './pages/Dashboard/DashboardPage';
 import URLManagementPage from './pages/URLs/URLManagementPage';
 import AnalyticsPage    from './pages/Analytics/AnalyticsPage';
@@ -30,6 +31,7 @@ const App = () => (
           <Route path={ROUTES.LOGIN}           element={<LoginPage />} />
           <Route path={ROUTES.REGISTER}        element={<RegisterPage />} />
           <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+          <Route path={ROUTES.RESET_PASSWORD}  element={<ResetPasswordPage />} />
 
           {/* Protected */}
           <Route path={ROUTES.DASHBOARD}  element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

@@ -30,6 +30,7 @@ from app.schemas.google import GoogleLoginRequest
 from app.schemas.user import (
     ChangePasswordRequest,
     ForgotPasswordRequest,
+    ResetPasswordRequest,
     Token,
     UserCreate,
     UserInToken,
@@ -143,13 +144,42 @@ def forgot_password(
     Always returns 200 regardless of whether the email exists.
     This prevents email enumeration (discovering registered accounts
     by watching which emails trigger an error vs. success).
-    NEW endpoint (was missing from original backend).
     """
-    # In production: look up user, generate reset token, send email
-    # Here we always return the same success response for security
+    from app.services.email_service import send_reset_password_email
+    user = db.query(User).filter(User.email == body.email).first()
+    if user:
+        token = create_access_token(
+            data={"sub": user.email, "type": "password_reset"},
+            expires_delta=timedelta(minutes=15)
+        )
+        send_reset_password_email(user.email, token)
+
     return {
         "message": "If an account with that email exists, a reset link has been sent."
     }
+
+
+@router.post(
+    "/reset-password",
+    status_code=status.HTTP_200_OK,
+    summary="Reset password using email token",
+)
+def reset_password(
+    body: ResetPasswordRequest,
+    db: Session = Depends(get_db),
+) -> dict:
+    payload = decode_access_token(body.token)
+    if not payload or payload.get("type") != "password_reset":
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token.")
+    
+    email = payload.get("sub")
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token.")
+
+    user.hashed_password = hash_password(body.new_password)
+    db.commit()
+    return {"message": "Password has been successfully reset."}
 
 
 @router.post(
