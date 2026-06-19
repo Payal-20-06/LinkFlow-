@@ -4,6 +4,7 @@ import Card, { CardHeader } from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
 import useToast from '../../hooks/useToast';
+import { authService } from '../../services/authService';
 import './SettingsPage.css';
 
 const SECTIONS = [
@@ -46,6 +47,32 @@ const SettingsPage = () => {
   const [apiKey, setApiKey] = useState('pf_sk_••••••••••••••••••••••••••••••••');
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
   const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
+  const [pwLoading, setPwLoading] = useState(false);
+
+  const handlePasswordUpdate = async () => {
+    if (!pwForm.current || !pwForm.next || !pwForm.confirm) {
+      toast.error('All fields are required.');
+      return;
+    }
+    if (pwForm.next !== pwForm.confirm) {
+      toast.error('New passwords do not match.');
+      return;
+    }
+    setPwLoading(true);
+    try {
+      await authService.changePassword({
+        current_password: pwForm.current,
+        new_password: pwForm.next,
+      });
+      toast.success('Password updated successfully!');
+      setPwForm({ current: '', next: '', confirm: '' });
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Failed to update password.';
+      toast.error(msg);
+    } finally {
+      setPwLoading(false);
+    }
+  };
 
   const handleSave = () => toast.success('Settings saved!');
   const handleCopyApi = () => { navigator.clipboard.writeText('pf_sk_demo_key_123456789'); toast.success('API key copied!'); };
@@ -122,7 +149,7 @@ const SettingsPage = () => {
                   onChange={(e) => setPwForm((p) => ({ ...p, next: e.target.value }))} />
                 <Input label="Confirm new password" type="password" name="confirm" value={pwForm.confirm}
                   onChange={(e) => setPwForm((p) => ({ ...p, confirm: e.target.value }))} />
-                <Button variant="primary" onClick={() => toast.success('Password updated!')}>
+                <Button variant="primary" onClick={handlePasswordUpdate} loading={pwLoading}>
                   Update password
                 </Button>
               </div>
