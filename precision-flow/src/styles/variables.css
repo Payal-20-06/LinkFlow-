@@ -150,9 +150,9 @@
   --navbar-height: 60px;
 
   /* ── Chart Colors ── */
-  --chart-primary:   #d0bfec;
-  --chart-secondary: #cdc2dc;
-  --chart-tertiary:  #ffd8ee;
-  --chart-4:         #c2b1dd;
-  --chart-5:         #edb7d8;
+  --chart-primary:   #38bdf8; /* Light Blue */
+  --chart-secondary: #a78bfa; /* Violet */
+  --chart-tertiary:  #f472b6; /* Pink */
+  --chart-4:         #2dd4bf; /* Teal */
+  --chart-5:         #818cf8; /* Indigo */
 }

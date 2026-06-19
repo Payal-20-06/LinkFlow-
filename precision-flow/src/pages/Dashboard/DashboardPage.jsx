@@ -227,8 +227,8 @@ const DashboardPage = () => {
               subtitle="Total clicks & unique visitors — last 14 days"
               action={
                 <div className="pf-chart-legend">
-                  <span className="pf-chart-legend-item" style={{ '--dot': '#d0bfec' }}>Total</span>
-                  <span className="pf-chart-legend-item" style={{ '--dot': '#ffd8ee' }}>Unique</span>
+                  <span className="pf-chart-legend-item" style={{ '--dot': 'var(--chart-primary)' }}>Total</span>
+                  <span className="pf-chart-legend-item" style={{ '--dot': 'var(--chart-secondary)' }}>Unique</span>
                 </div>
               }
             />

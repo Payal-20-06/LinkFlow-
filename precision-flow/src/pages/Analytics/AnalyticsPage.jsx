@@ -128,10 +128,10 @@ const AnalyticsPage = () => {
             action={
               <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--color-on-surface-variant)' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#d0bfec', display: 'inline-block' }} /> Total Clicks
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--chart-primary)', display: 'inline-block' }} /> Total Clicks
                 </span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--color-on-surface-variant)' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ffd8ee', display: 'inline-block' }} /> Unique Visitors
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--chart-secondary)', display: 'inline-block' }} /> Unique Visitors
                 </span>
               </div>
             }
